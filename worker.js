@@ -2,9 +2,8 @@ const mongoose = require('mongoose');
 const amqp = require('amqplib');
 
 mongoose.connect('mongodb://localhost:27017/myapp', {useNewUrlParser: true});
-const { Schema } = mongoose;
 
-const notificationSchema = new Schema({
+const notificationSchema = new mongoose.Schema({
   to: String,
   text: String
 });
