@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/vezucci/guesty-be-task#readme",
   "dependencies": {
+    "amqplib": "^0.5.3",
+    "body-parser": "^1.18.3",
     "express": "^4.16.4",
     "mongoose": "^5.4.20"
   }
