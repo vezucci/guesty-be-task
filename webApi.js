@@ -2,14 +2,22 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const amqp = require('amqplib');
 
+const CONSTANTS = require('./constants');
+const timeSetter = require('./middlewares/timeSetter');
+
+let ch = null;
+
+amqp
+  .connect(CONSTANTS.RABBITMQ_CONNECTION_STRING)
+  .then(conn => conn.createChannel())
+  .then(channel => ch = channel);
+
 const app = express();
 app.use(bodyParser.json());
-
-let connection = null,
-    ch = null;
+app.use(timeSetter);
 
 app.post('/api/notification', (req, res) => {
-  const q = 'notifications_queue';
+  const q = CONSTANTS.QUEUE_NAME;
   const msg = JSON.stringify(req.body);
   console.log('got ' + msg);
 
@@ -19,9 +27,5 @@ app.post('/api/notification', (req, res) => {
   res.send('sent your message');
 });
 
-app.listen(5000, async () => {
-  connection = await amqp.connect('amqp://localhost');
-  ch = await connection.createChannel();
-  console.log('established connection');
-});
+app.listen(5000);
 

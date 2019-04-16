@@ -1,20 +1,17 @@
 const mongoose = require('mongoose');
 const amqp = require('amqplib');
 
-mongoose.connect('mongodb://localhost:27017/myapp', {useNewUrlParser: true});
+require('./models/Notification');
+const CONSTANTS = require('./constants');
 
-const notificationSchema = new mongoose.Schema({
-  to: String,
-  text: String
-});
-
-const Notification = mongoose.model('Notification', notificationSchema);
+mongoose.connect(CONSTANTS.MONGO_CONNECTION_STRING, {useNewUrlParser: true});
+const Notification = mongoose.model('Notification');
 
 amqp
-  .connect('amqp://localhost')
+  .connect(CONSTANTS.RABBITMQ_CONNECTION_STRING)
   .then(conn => conn.createChannel())
   .then(ch => {
-    const q = 'notifications_queue';
+    const q = CONSTANTS.QUEUE_NAME;
     ch.assertQueue(q);
     console.log('waiting for messages');
     ch.consume(q, msg => {
