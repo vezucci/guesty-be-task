@@ -37,9 +37,6 @@ amqp
       retryStrategy: request.RetryStrategies.HTTPOrNetworkError,
       body: note 
     }, function(err, response, body){
-      if (err) {
-        console.log('Error: ' + err);
-      }
       if (response) {
         console.log('The number of request attempts: ' + response.attempts);
       }
