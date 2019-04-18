@@ -17,6 +17,10 @@ app.use(bodyParser.json());
 app.use(timeSetter);
 
 app.post('/api/notification', (req, res) => {
+  if (isError()) {
+    res.sendStatus(500);
+    return;
+  }
   const q = CONSTANTS.QUEUE_NAME;
   const msg = JSON.stringify(req.body);
   console.log('got ' + msg);
@@ -24,8 +28,12 @@ app.post('/api/notification', (req, res) => {
   ch.assertQueue(q);
   ch.sendToQueue(q, Buffer.from(msg));
   console.log('sent');
-  res.send('sent your message');
+  res.sendStatus(200);
 });
 
-app.listen(5000);
+app.listen(5000, () => console.log('listening'));
+
+function isError() {
+  return Math.random() > 0.5;
+}
 
