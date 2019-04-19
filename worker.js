@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const amqp = require('amqplib');
+const request = require('requestretry');
 
 require('./models/Notification');
 const CONSTANTS = require('./constants');
@@ -21,6 +22,23 @@ amqp
       note.save().then(() => {
         ch.ack(msg);
         console.log('saved notification to mongo');
+        sendNotification({text: Math.random().toString(), to: 'vetal'});
       })  
     })
   })
+
+  function sendNotification(note) {
+    request({
+      url: 'http://localhost:5000/api/notification',
+      json: true,
+      method: 'POST',
+      maxAttempts: 10,
+      retryDelay: 1000,
+      retryStrategy: request.RetryStrategies.HTTPOrNetworkError,
+      body: note 
+    }, function(err, response, body){
+      if (response) {
+        console.log('The number of request attempts: ' + response.attempts);
+      }
+    });
+  }
